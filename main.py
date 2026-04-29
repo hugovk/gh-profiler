@@ -29,6 +29,7 @@ import json
 from utils import profile_utils
 from utils.infra_utils import run_cmd
 from utils import analysis_utils
+from utils import summary_utils
 
 gh_user = sys.argv[1]
 
@@ -46,22 +47,18 @@ def main():
     opened_count, merged_count, closed_count = pr_counts
     flag_closed_pr, flag_merged_pr = analysis_utils.process_pr_activity(pr_counts)
 
-
-    # How much of the profile is filled out?
-    # email? website? social?
-
     # Summarize findings.
-    print(f"\nGitHub user: {gh_user}")
-    print(f"  {flag_age} Account age: {account_age.days} days")
-
-    if opened_count >= 10:
-        # Only show merged if it's a good sign.
-        if flag_merged_pr == green_flag:
-            print(f"  {flag_merged_pr} {merged_count} of {opened_count} PRs have been merged in the last 21 days.")
-        print(f"  {flag_closed_pr} {closed_count} of {opened_count} PRs have been closed without merging in the last 21 days.")
-    else:
-        print(f"  {green_flag} {gh_user} has opened fewer than 10 PRs in the last 21 days.")
-    print("")
+    summary_utils.show_summary(
+        green_flag,
+        gh_user,
+        account_age,
+        opened_count,
+        merged_count,
+        closed_count,
+        flag_age,
+        flag_merged_pr,
+        flag_closed_pr,
+    )
 
 
 if __name__ == "__main__":
