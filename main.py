@@ -28,6 +28,7 @@ import json
 
 from utils import profile_utils
 from utils.infra_utils import run_cmd
+from utils import analysis_utils
 
 gh_user = sys.argv[1]
 
@@ -38,14 +39,7 @@ green_flag = "\U0001F7E2"
 def main():
     # How old is the account?
     account_age = profile_utils.get_account_age(gh_user)
-
-    if account_age.days > 3*365:
-        flag_age = green_flag
-    elif account_age.days > 90:
-        flag_age = yellow_flag
-    else: 
-        flag_age = red_flag
-
+    flag_age = analysis_utils.process_account_age(account_age)
 
     # What does recent PR activity look like?
     from urllib.parse import quote
