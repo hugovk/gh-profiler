@@ -103,5 +103,5 @@ if opened_count >= 10:
         print(f"  {flag_merged_pr} {merged_count} of {opened_count} PRs have been merged in the last 21 days.")
     print(f"  {flag_closed_pr} {closed_count} of {opened_count} PRs have been closed without merging in the last 21 days.")
 else:
-    print(f"  {gh_user} has opened fewer than 10 PRs in the last 21 days.")
+    print(f"  {green_flag} {gh_user} has opened fewer than 10 PRs in the last 21 days.")
 print("")
