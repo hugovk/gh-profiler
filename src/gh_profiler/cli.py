@@ -37,9 +37,6 @@ def _get_username(pr_issue_num):
     # Try as a PR.
     if username := _process_pr(pr_issue_num, repo_slug):
         return username
-    # if username is not None:
-    #     return username
-    
 
     # Then try as an issue.
     issue_cmd = (
@@ -74,12 +71,8 @@ def _get_repo_slug():
 
 def _process_pr(pr_issue_num, repo_slug):
     """See if this is a PR."""
-    pr_cmd = (
-        f'gh pr view {pr_issue_num} '
-        f'--repo {repo_slug} '
-        f'--json author '
-        f'--jq ".author.login"'
-    )
+    pr_cmd = f'gh pr view {pr_issue_num} --repo {repo_slug} --json author --jq ".author.login"'
+
     try:
         username = run_cmd(pr_cmd).strip()
         if username:
