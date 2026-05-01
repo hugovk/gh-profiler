@@ -13,7 +13,7 @@ from .utils.infra_utils import run_cmd
 @click.command()
 @click.argument("target")
 def main(target):
-    """Process user's gh-profiler command."""
+    """Examine a GitHub user's profile, to help quickly decide how much to invest in their contributions."""
 
     # If the main argument is an integer, process the PR/issue number.
     # Otherwise, assume it's the username.
