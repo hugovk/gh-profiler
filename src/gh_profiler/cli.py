@@ -62,21 +62,18 @@ def _get_repo_slug():
 def _process_pr(pr_issue_num, repo_slug):
     """See if this is a PR."""
     pr_cmd = f'gh pr view {pr_issue_num} --repo {repo_slug} --json author --jq ".author.login"'
-
     try:
-        username = run_cmd(pr_cmd).strip()
-        if username:
+        if username := run_cmd(pr_cmd).strip():
             return username
-    except Exception:
-        # The number wasn't a PR.
+    except Exception as e:
+        breakpoint()
         return None
 
 def _process_issue(pr_issue_num, repo_slug):
     """See if this is an issue."""
     issue_cmd = f'gh issue view {pr_issue_num} --repo {repo_slug} --json author --jq ".author.login"'
     try:
-        username = run_cmd(issue_cmd).strip()
-        if username:
+        if username := run_cmd(issue_cmd).strip():
             return username
     except Exception:
         msg = f"Couldn't find a PR or issue #{pr_issue_num} in the repository {repo_slug}."
