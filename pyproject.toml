@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gh-profiler = "gh_profiler.main:main"
+gh-profiler = "gh_profiler.cli:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -6,18 +6,15 @@ to invest in reviewing PRs, and general interaction on open source projects.
 
 import sys
 
-import click
-
 from .utils.profile_data import profile_data as pdata
 from .utils import profile_utils
 from .utils import analysis_utils
 from .utils import summary_utils
 
 
-@click.command()
-@click.argument("target")
-def main(target):
-    pdata.username = target
+def main(gh_user):
+    pdata.username = gh_user
+
     # Make sure gh is available.
     profile_utils.ensure_gh()
 
@@ -36,7 +33,3 @@ def main(target):
 
     # Summarize findings.
     summary_utils.show_summary()
-
-
-if __name__ == "__main__":
-    main()
