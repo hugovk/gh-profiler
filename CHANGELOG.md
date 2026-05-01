@@ -8,7 +8,7 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
-### Unreleased
+### 0.2.1
 
 #### External changes
 
@@ -17,10 +17,11 @@ These initial releases have usable behavior, but may have some rough edges for s
 - Ensure that gh CLI tool is authenticated before running. (#12)
 - Use gh's default remote, rather than parsing output of `git remote -v` and taking first result. (#13)
 - If a user has opened fewer than 10 PRs recently, don't analyze PR activity. Fixes zero division error bug from #14.
+- Clarify gh CLI unauthenticated message to state that the API may have hung.
 
 #### Internal changes
 
-- NA
+- Move CLI helper functions to utils module.
 
 ### 0.2.0
 
