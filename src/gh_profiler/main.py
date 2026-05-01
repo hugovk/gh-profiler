@@ -15,9 +15,9 @@ from .utils import summary_utils
 
 
 @click.command()
-@click.argument("gh_user")
-def main(gh_user):
-    pdata.username = gh_user
+@click.argument("target")
+def main(target):
+    pdata.username = target
     # Make sure gh is available.
     profile_utils.ensure_gh()
 
