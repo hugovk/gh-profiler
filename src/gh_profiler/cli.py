@@ -18,9 +18,13 @@ def main(target):
     You can target a GitHub username, or a PR/issue number from the repository you're working in.
 
     \b
-    Examples:
+    Usage as a tool:
     $ uvx gh-profiler ehmatthes
     $ uvx gh-profiler 8
+
+    \b
+    Usage when installing gh-profiler:
+    $ gh-profiler ehmatthes
     $ python -m gh_profiler ehmatthes
       ...
     """
