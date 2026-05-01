@@ -8,6 +8,12 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### 0.2.2
+
+#### External changes
+
+- Fix bug with yellow flag for account age.
+
 ### 0.2.1
 
 #### External changes
