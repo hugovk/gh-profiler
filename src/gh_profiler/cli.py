@@ -34,24 +34,14 @@ def _get_username(pr_issue_num):
     """Get the user that opened this PR/issue."""
     repo_slug = _get_repo_slug()
     
-    # Try as a PR.
+    # Try as a PR, then as an issue.
     if username := _process_pr(pr_issue_num, repo_slug):
         return username
+    if username := _process_issue(pr_issue_num, repo_slug):
+        return username
 
-    # Then try as an issue.
-    issue_cmd = (
-        f'gh issue view {pr_issue_num} '
-        f'--repo {repo_slug} '
-        f'--json author '
-        f'--jq ".author.login"'
-    )
-    try:
-        username = run_cmd(issue_cmd).strip()
-        if username:
-            return username
-    except Exception:
-        msg = f"Couldn't find a PR or issue #{pr_issue_num} in the repository {repo_slug}."
-        sys.exit(msg)
+    msg = f"Couldn't find a PR or issue #{pr_issue_num} in the repository {repo_slug}."
+    sys.exit(msg)
 
 def _get_repo_slug():
     """Parse `git remote -v` to identify GitHub project."""
@@ -80,3 +70,14 @@ def _process_pr(pr_issue_num, repo_slug):
     except Exception:
         # The number wasn't a PR.
         return None
+
+def _process_issue(pr_issue_num, repo_slug):
+    """See if this is an issue."""
+    issue_cmd = f'gh issue view {pr_issue_num} --repo {repo_slug} --json author --jq ".author.login"'
+    try:
+        username = run_cmd(issue_cmd).strip()
+        if username:
+            return username
+    except Exception:
+        msg = f"Couldn't find a PR or issue #{pr_issue_num} in the repository {repo_slug}."
+        sys.exit(msg)
