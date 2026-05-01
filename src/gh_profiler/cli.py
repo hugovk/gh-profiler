@@ -35,9 +35,10 @@ def _get_username(pr_issue_num):
     repo_slug = _get_repo_slug()
     
     # Try as a PR.
-    username = _process_pr(pr_issue_num, repo_slug)
-    if username is not None:
+    if username := _process_pr(pr_issue_num, repo_slug):
         return username
+    # if username is not None:
+    #     return username
     
 
     # Then try as an issue.
