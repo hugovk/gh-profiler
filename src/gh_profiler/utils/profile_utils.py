@@ -41,6 +41,13 @@ def get_pr_activity():
     )
     closed_cmd = f'gh api "search/issues?q={quote(base_query + " is:closed -is:merged")}" --jq .total_count'
 
-    pdata.opened_count = int(infra_utils.run_cmd(opened_cmd).strip())
-    pdata.merged_count = int(infra_utils.run_cmd(merged_cmd).strip())
-    pdata.closed_count = int(infra_utils.run_cmd(closed_cmd).strip())
+    # DEV: These calls seem to be timing out occasionally.
+    try:
+        pdata.opened_count = int(infra_utils.run_cmd(opened_cmd).strip())
+        pdata.merged_count = int(infra_utils.run_cmd(merged_cmd).strip())
+        pdata.closed_count = int(infra_utils.run_cmd(closed_cmd).strip())
+    except ValueError:
+        msg = "Couldn't get recent PR activity. The gh CLI may have timed out."
+        msg += "\n  You may want to try running the command again."
+        sys.exit(msg)
+
