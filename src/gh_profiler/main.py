@@ -17,6 +17,9 @@ pdata.username = gh_user
 
 
 def main():
+    # Make sure gh is available.
+    profile_utils.ensure_gh()
+
     # Get all information we'll need about the user's profile.
     profile_utils.get_profile_info()
 

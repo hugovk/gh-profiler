@@ -5,10 +5,23 @@ from datetime import datetime as dt
 from datetime import timezone as tz
 from datetime import timedelta
 from urllib.parse import quote
+import sys
 
 from .profile_data import profile_data as pdata
 from . import infra_utils
 
+def ensure_gh():
+    """Make sure user has gh installed.
+    
+    DEV: This may need different implementation on Windows or Linux.
+    """
+    cmd = "gh --version"
+    try:
+        version_info = infra_utils.run_cmd(cmd)
+    except FileNotFoundError:
+        msg = "The GitHub CLI tool (gh) must be installed."
+        msg += "\n  https://cli.github.com"
+        sys.exit(msg)
 
 def get_profile_info():
     """Get all the profile info we'll need."""
