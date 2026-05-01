@@ -75,3 +75,14 @@ Maintaining
 
 - Add or modify a requirement by modifying pyproject.toml, or running `uv add <package>`.
 - Then run `uv lock`.
+
+New releases
+---
+
+Update changelog and bump version, then:
+
+```sh
+$ rm -rf dist/*
+$ uv build
+$ uv publish
+```

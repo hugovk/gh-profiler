@@ -8,13 +8,14 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
-### Unreleased
+### 0.1.1
 
 #### External changes
 
 - Revise description.
 - Require Python >= 3.10, not 3.14.
 - Add usage instructions to README.
+- Document release process.
 
 #### Internal changes
 
