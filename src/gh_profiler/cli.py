@@ -32,18 +32,8 @@ def main(target):
 
 def _get_username(pr_issue_num):
     """Get the user that opened this PR/issue."""
-    remote_output = run_cmd("git remote -v")
-    match = re.search(
-        r"github\.com[:/](?P<owner>[^/\s]+)/(?P<repo>[^.\s]+)(?:\.git)?\s",
-        remote_output,
-    )
-    if not match:
-        msg = f"Couldn't determine appropriate required information from `git remote -v`."
-        sys.exit(msg)
-
-    owner = match.group("owner")
-    repo = match.group("repo")
-    repo_slug = f"{owner}/{repo}"
+    repo_slug = _get_repo_slug()
+    
 
     # See if this is a PR.
     pr_cmd = (
@@ -75,3 +65,19 @@ def _get_username(pr_issue_num):
     except Exception:
         msg = f"Couldn't find a PR or issue #{pr_issue_num} in the repository {repo_slug}."
         sys.exit(msg)
+
+def _get_repo_slug():
+    """Parse `git remote -v` to identify GitHub project."""
+    remote_output = run_cmd("git remote -v")
+    match = re.search(
+        r"github\.com[:/](?P<owner>[^/\s]+)/(?P<repo>[^.\s]+)(?:\.git)?\s",
+        remote_output,
+    )
+    if not match:
+        msg = f"Couldn't determine appropriate required information from `git remote -v`."
+        sys.exit(msg)
+
+    owner = match.group("owner")
+    repo = match.group("repo")
+
+    return f"{owner}/{repo}"
