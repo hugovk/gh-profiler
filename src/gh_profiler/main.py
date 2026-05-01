@@ -6,17 +6,18 @@ to invest in reviewing PRs, and general interaction on open source projects.
 
 import sys
 
+import click
+
 from .utils.profile_data import profile_data as pdata
 from .utils import profile_utils
 from .utils import analysis_utils
 from .utils import summary_utils
 
 
-gh_user = sys.argv[1]
-pdata.username = gh_user
-
-
-def main():
+@click.command()
+@click.argument("gh_user")
+def main(gh_user):
+    pdata.username = gh_user
     # Make sure gh is available.
     profile_utils.ensure_gh()
 
