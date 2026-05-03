@@ -8,6 +8,19 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### 0.2.5
+
+#### External changes
+
+- Simplify output: fewer blank lines, don't print individual lines for empty profile fields.
+
+#### Internal changes
+
+- Build summary string and then print that string, instead of using a series of print calls.
+- Helper functions to build sections of summary.
+- Initial unit tests for `_get_summary()`.
+- Simpler logic for generating summary sections.
+
 ### 0.2.4
 
 #### External changes
