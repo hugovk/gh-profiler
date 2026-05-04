@@ -1,18 +1,15 @@
 """Utils for the gh-profiler CLI."""
 
-import json
 import sys
 
-import click
 
 from .infra_utils import run_cmd
-from . import cli_utils
 
 
 def get_username(pr_issue_num):
     """Get the user that opened this PR/issue."""
     repo_slug = _get_repo_slug()
-    
+
     # Try as a PR, then as an issue.
     if username := _process_pr(pr_issue_num, repo_slug):
         return username
@@ -25,6 +22,7 @@ def get_username(pr_issue_num):
 
 # --- Helper functions ---
 
+
 def _get_repo_slug():
     """Ask `gh` for the resolved default repo (honors `gh repo set-default`)."""
     slug = run_cmd("gh repo view --json nameWithOwner --jq .nameWithOwner").strip()
@@ -36,6 +34,7 @@ def _get_repo_slug():
         sys.exit(msg)
     return slug
 
+
 def _process_pr(pr_issue_num, repo_slug):
     """See if this is a PR."""
     pr_cmd = f'gh pr view {pr_issue_num} --repo {repo_slug} --json author --jq ".author.login"'
@@ -45,6 +44,7 @@ def _process_pr(pr_issue_num, repo_slug):
     except Exception as e:
         breakpoint()
         return None
+
 
 def _process_issue(pr_issue_num, repo_slug):
     """See if this is an issue."""
