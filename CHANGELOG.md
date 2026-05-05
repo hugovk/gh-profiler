@@ -8,6 +8,17 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### 0.3.2
+
+#### External changes
+
+- Fix `usename` -> `username` bug when user hasn't opened any recent issues.
+- Show green flag when user hasn't opened recent issues.
+
+#### Internal changes
+
+- Simpler test for user with no recent issues; just test snippets of output.
+
 ### 0.3.1
 
 #### External changes
