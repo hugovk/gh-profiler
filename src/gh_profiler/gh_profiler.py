@@ -21,6 +21,3 @@ def main():
 
     # Summarize findings.
     summary_utils.show_summary()
-
-    # Finished, don't return control to cli.py.
-    sys.exit()
