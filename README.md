@@ -62,7 +62,7 @@ Maintaining
 
 ### `--redact`
 
-For live demos and screenshots, you can pass the `--redact` flag. The username and profile information sections will show "<redacted>" in place of identifying information:
+For live demos and screenshots, you can pass the `--redact` flag. The username and profile information sections will show "\<redacted\>" in place of identifying information:
 
 ```sh
 $ uv run gh-profiler 39 --redact
