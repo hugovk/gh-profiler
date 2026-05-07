@@ -15,6 +15,9 @@ def _get_summary():
 
     This is more testable and flexible than just printing each bit of information.
     """
+    if pdata.redact:
+        _redact_info()
+
     summary = ""
 
     # Username, account age:
@@ -34,6 +37,20 @@ def _get_summary():
 # --- Helper functions ---
 
 
+def _redact_info():
+    """Redact identifying information when --redact passed.
+
+    This is primarily used for live demos, and screenshots.
+
+    Redact here, when all analysis has been done, and we're only presenting
+    information.
+    """
+    pdata.username = "<redacted>"
+    for k, v in pdata.profile_info.items():
+        if v:
+            pdata.profile_info[k] = "<redacted>"
+
+
 def _profile_summary():
     """Summarize information from the user's profile dict."""
     if pdata.flag_profile == flags.red_flag:
@@ -43,7 +60,7 @@ def _profile_summary():
     # Collect empty fields for last line.
     summary = f"\n  {pdata.flag_profile} Profile information:\n"
     empty_fields = []
-    for k, v in pdata.profile_dict.items():
+    for k, v in pdata.profile_info.items():
         if v and k != "bio":
             summary += f"      {k}: {v}\n"
         elif v and k == "bio":
