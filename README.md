@@ -88,6 +88,13 @@ Running tests
 $ uv run pytest
 ```
 
+Profiling
+---
+
+```sh
+$ uv run python -m cProfile -s cumtime -m gh_profiler ehmatthes > profile.txt
+```
+
 New releases
 ---
 
