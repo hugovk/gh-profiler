@@ -33,7 +33,8 @@ If you're working in your local project directory, you can simply provide a PR o
 
 ```sh
 $ uvx gh-profiler 8
-GitHub user: ehmatthes
+Issue #8: Accept a username or an issue/ pr number.
+Author: ehmatthes
   🟢 Account age: 5058 days
   ...
 ```
@@ -66,7 +67,8 @@ For live demos and screenshots, you can pass the `--redact` flag. The username a
 
 ```sh
 $ uv run gh-profiler 39 --redact
-GitHub user: <redacted>
+Issue #39: Add a `--redact` flag
+Author: <redacted>
   🟢 Account age: 5064 days
 
   🟢 Profile information:
