@@ -3,9 +3,27 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(slots=True)
 class ProfileData:
+    """The main data store for everything we learn about the user.
+
+    There's one instance of ProfileData, which is created here when it's first
+    imported.
+
+    Uses `slots=True` to make sure this is an accurate listing of all fields
+    that can be filled in about the user.
+    """
+
     username: str = ""
+
+    # --- Target info ---
+    is_pr: bool = False
+    pr_number: int = 0
+    pr_title: str = ""
+
+    is_issue: bool = False
+    issue_number: int = 0
+    issue_title: str = ""
 
     # --- Profile info ---
     # profile_dict is the raw profile data we get from GitHub.
@@ -15,6 +33,7 @@ class ProfileData:
     account_age: int = 0
 
     flag_age: str = ""
+    flag_profile: str = ""
 
     # --- PR fields ---
     opened_count: int = 0
@@ -29,6 +48,7 @@ class ProfileData:
     issues_not_planned: int = 0
     total_repeats: int = 0
     repeated_issue_titles: dict | None = None
+    issue_activity: dict | None = None
 
     flag_issues_not_planned: str = ""
     flag_repeated_issues: str = ""
