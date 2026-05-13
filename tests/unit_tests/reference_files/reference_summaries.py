@@ -2,7 +2,7 @@
 
 full_summary = """
 GitHub user: ehmatthes
-  🟢 Account age: 5058 days
+  🟢 Account age: 5,058 days
 
   🟢 Profile information:
       name: Eric Matthes
@@ -20,7 +20,7 @@ GitHub user: ehmatthes
 
 summary_empty_profile = """
 GitHub user: ehmatthes
-  🟢 Account age: 5058 days
+  🟢 Account age: 5,058 days
 
   🔴 No profile information has been provided.
 
