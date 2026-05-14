@@ -53,11 +53,16 @@ class ProfileData:
     flag_issues_not_planned: str = ""
     flag_repeated_issues: str = ""
 
+    # Overall flags. Used in header lines in summary, and for --concise output.
+    flag_overall_profile: str = ""
+    flag_overall_pr: str = ""
     flag_overall_issues: str = ""
 
     # --- Behavior fields ---
+    concise: bool = False
     # Redact is used primarily for live demos, and screenshots.
     redact: bool = False
+
 
 
 profile_data = ProfileData()

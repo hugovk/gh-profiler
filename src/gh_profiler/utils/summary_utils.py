@@ -11,13 +11,54 @@ def show_summary():
 
 
 def _get_summary():
-    """Build a summary string.
-
-    This is more testable and flexible than just printing each bit of information.
-    """
+    """Build a summary string."""
     if pdata.redact:
         _redact_info()
 
+    if pdata.concise:
+        return _get_concise_summary()
+    else:
+        return _get_full_summary()
+
+def _get_concise_summary():
+    """Build the shorter, concise summary string.
+    
+    This is one line for each main section: name, profile, pr activity, issue activity.
+    """
+    summary = ""
+
+    summary += f"GitHub user: {pdata.username}\n"
+
+    summary += _get_concise_section(
+        pdata.flag_overall_profile,
+        "user's profile",
+    )
+
+    summary += _get_concise_section(
+        pdata.flag_overall_pr,
+        "recent PR activity",
+    )
+
+    summary += _get_concise_section(
+        pdata.flag_overall_issues,
+        "recent issue activity",
+    )
+
+    summary += f"\nFor a more detailed report, run `gh-profiler {pdata.username}`."
+
+    return summary
+
+def _get_concise_section(flag, section):
+    if flag == flags.green_flag:
+        return f"{flag} No concerns found with {section}.\n"
+    elif flag == flags.yellow_flag:
+        return f"{flag} Some concerns found with {section}.\n"
+    elif flag == flags.red_flag:
+        return f"{flag} Significant concerns found with {section}.\n"
+
+
+def _get_full_summary():
+    """Build the full, detailed summary string."""
     summary = ""
 
     # If target is a PR or issue, add title.
