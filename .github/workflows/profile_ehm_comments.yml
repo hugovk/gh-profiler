@@ -14,10 +14,30 @@ jobs:
     if: ${{ github.event.comment.user.login == 'ehmatthes' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Reply to comment
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Run gh-profiler
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          uvx gh-profiler@latest ehmatthes > profiler.txt
+          echo "=== gh-profiler output ==="
+          cat profiler.txt
+
+      - name: Comment on issue or PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "GitHub profile summary for @ehmatthes:"
+            echo
+            echo '```text'
+            cat profiler.txt
+            echo '```'
+          } > body.txt
+
+          jq -Rs '{body: .}' body.txt > payload.json
+
           gh api \
             repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
-            -f body="Debug reply: I saw your comment: ${{ github.event.comment.body }}"
+            --input payload.json
