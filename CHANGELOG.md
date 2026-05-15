@@ -8,6 +8,16 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### Unreleased
+
+#### External changes
+
+- NA
+
+#### Internal changes
+
+- Whenever someone opens a new PR or issue on this repository, the workflow profile_contributors.yml automatically runs gh-profiler against the author. The output is written as a comment on the PR or issue.
+
 ### 0.4.0
 
 #### External changes
