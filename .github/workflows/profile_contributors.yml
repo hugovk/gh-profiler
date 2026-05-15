@@ -29,25 +29,28 @@ jobs:
           fi
 
       - name: Run gh-profiler
-        id: profiler
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          body="$(uvx gh-profiler@latest "${{ steps.meta.outputs.login }}")"
-          {
-            echo 'body<<EOF'
-            echo "GitHub profile summary for @${{ steps.meta.outputs.login }}:"
-            echo
-            echo '```text'
-            echo "$body"
-            echo '```'
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+          echo "Running gh-profiler for: '${{ steps.meta.outputs.login }}'"
+          uvx gh-profiler@latest "${{ steps.meta.outputs.login }}"" --concise > profiler.txt
+          echo "=== gh-profiler output ==="
+          cat profiler.txt
 
       - name: Comment on issue or PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          {
+            echo "Profile summary:"
+            echo
+            echo '```text'
+            cat profiler.txt
+            echo '```'
+          } > body.txt
+
+          jq -Rs '{body: .}' body.txt > payload.json
+
           gh api \
             repos/${{ github.repository }}/issues/${{ steps.meta.outputs.number }}/comments \
-            -f body="${{ steps.profiler.outputs.body }}"
+            --input payload.json
