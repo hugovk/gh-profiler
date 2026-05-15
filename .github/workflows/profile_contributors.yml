@@ -33,7 +33,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Running gh-profiler for: '${{ steps.meta.outputs.login }}'"
-          uvx gh-profiler@latest "${{ steps.meta.outputs.login }}"" --concise > profiler.txt
+          uvx gh-profiler@latest ${{ steps.meta.outputs.login }} --concise > profiler.txt
           echo "=== gh-profiler output ==="
           cat profiler.txt
 
