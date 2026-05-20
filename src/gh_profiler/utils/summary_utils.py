@@ -69,7 +69,7 @@ def _get_full_summary():
     summary += _username_line()
 
     # Always include account age.
-    summary += f"  {pdata.flag_age} Account age: {pdata.account_age.days} days\n"
+    summary += f"  {pdata.flag_age} Account age: {pdata.account_age.days:,} days\n"
 
     # Include profiler, PR activity, and issue activity sections.
     summary += _profile_summary()
