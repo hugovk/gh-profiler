@@ -13,6 +13,7 @@ These initial releases have usable behavior, but may have some rough edges for s
 #### External changes
 
 - Commas in account ages over 999 days.
+- PR search is restricted to public activity.
 
 #### Internal changes
 
