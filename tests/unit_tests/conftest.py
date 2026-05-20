@@ -29,6 +29,7 @@ def filled_pdata():
         "email": "ehmatthes@gmail.com",
         "bio": None,
     }
+    pdata.socials = []
     pdata.account_age = timedelta(days=5058)
 
     pdata.opened_count = 5
