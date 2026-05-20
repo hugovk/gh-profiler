@@ -35,7 +35,7 @@ If you're working in your local project directory, you can simply provide a PR o
 $ uvx gh-profiler 8
 Issue #8: Accept a username or an issue/ pr number.
 Author: ehmatthes
-  🟢 Account age: 5058 days
+  🟢 Account age: 5,058 days
   ...
 ```
 
@@ -48,7 +48,7 @@ You can also install the project, and then run the bare `gh-profiler` command:
 (.venv) $ pip install gh-profiler
 (.venv) $ gh-profiler ehmatthes
 GitHub user: ehmatthes
-  🟢 Account age: 5058 days
+  🟢 Account age: 5,058 days
   ...
 ```
 
@@ -111,7 +111,7 @@ For live demos and screenshots, you can pass the `--redact` flag. The username a
 $ uv run gh-profiler 39 --redact
 Issue #39: Add a `--redact` flag
 Author: <redacted>
-  🟢 Account age: 5064 days
+  🟢 Account age: 5,058 days
 
   🟢 Profile information:
       name: <redacted>
