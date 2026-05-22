@@ -12,7 +12,7 @@ These initial releases have usable behavior, but may have some rough edges for s
 
 #### External changes
 
-- NA
+- Start documenting talks and discussions of this project in README.
 
 #### Internal changes
 

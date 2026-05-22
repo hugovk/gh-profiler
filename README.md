@@ -100,6 +100,14 @@ To start seeing profiles when new issues and PRs are opened:
   ...
 ```
 
+Talks & discussion
+---
+
+This is a list of talks and discussions related to gh-profiler.
+
+- PyCon US 2026 lightning talk (video not released yet)
+- Real Python [episode 296](https://realpython.com/podcasts/rpp/296/#t=2296) (brief overview of project)
+
 Maintaining
 ---
 
