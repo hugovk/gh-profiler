@@ -5,6 +5,9 @@ Many of us have received waves of open source contributions where many of the ne
 
 This meant to give you some quick context about how much to invest in reviewing the PR. It's not meant to give an immediate signal to close the PR or issue.
 
+> [!NOTE]
+> Note for non-Python users: If you want to run gh-profiler each time a PR or issue is opened in a repository, you don't need to use Python at all. You can copy the [profiler_contributors.yml](https://github.com/ehmatthes/gh-profiler/blob/main/src/gh_profiler/templates/profile_contributors.yml) file and paste it into your own `.github/workflows/` directory. From that point forward, you'll see a comment on each new PR and issue with a concise summary of the user that opened the PR or issue.
+
 Running as a tool
 ---
 
