@@ -152,11 +152,27 @@ $ uv run pytest tests/e2e_tests -k full
 $ uv run pytest tests/e2e_tests -k concise
 ```
 
+There's a shell script that runs all of these tests. It works on macOS and probably linux, but may not work on Windows.
+
+```sh
+$ ./test_all.sh
+```
+
 Profiling
 ---
 
 ```sh
 $ uv run python -m cProfile -s cumtime -m gh_profiler ehmatthes > profile.txt
+```
+
+Benchmarking
+---
+
+To track overall real-world performance over time, use the benchmarking script:
+
+```sh
+$ uv run developer_resources/benchmark.py
+$ uv run developer_resources/benchmark.py <target>
 ```
 
 New releases
