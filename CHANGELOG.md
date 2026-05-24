@@ -12,11 +12,15 @@ These initial releases have usable behavior, but may have some rough edges for s
 
 #### External changes
 
-- NA
+### 0.6.2
+
+#### External changes
+
+- When a user has a newer account, but no other red/yellow flags, their account age and overall profile flags are set green. This avoids discouraging newer contributors who are engaging in no problematic behaviors.
 
 #### Internal changes
 
-- NA
+- Includes unit tests for combinations of flags. This is a good start for implementing more complex evaluation rules, without accidentally contradicting earlier behavior.
 
 ### 0.6.1
 
