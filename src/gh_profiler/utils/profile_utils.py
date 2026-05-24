@@ -14,9 +14,9 @@ from .profile_data import profile_data as pdata
 
 
 def ensure_gh():
-    """Make sure user has gh installed and is authenticated.
+    """Make sure user has gh installed.
 
-    Check for authentication issues in first external call, rather than making
+    Check for authentication issues in batch of external calls, rather than making
     a call just for that purpose here.
     """
     cmd = "gh --version"
@@ -34,19 +34,21 @@ def get_data():
     Fetch all data we'll need, then parse it into the data structures that
     can be analyzed and processed.
     """
-    # This is the first call, and it checks if the user exists. This call needs
-    # to happen before all others.
-    _get_profile_dict()
-
     # Fetch data. This can all be done in parallel. The benchmarking is here
     # because this is the slowest part of the program, and it's helpful at
-    # times to benchmark just this block of code.
+    # times to benchmark just this fetching code.
     ts_before = perf_counter()
     with ThreadPoolExecutor() as executor:
+        # Make fetching calls.
+        status_future = executor.submit(_fetch_status)
+        profile_dict_future = executor.submit(_fetch_profile_dict)
         socials_future = executor.submit(_fetch_socials)
         pr_activity_future = executor.submit(_fetch_pr_activity)
         issue_activity_future = executor.submit(_fetch_issue_activity)
 
+        # When each call finishes, store the result.
+        status_str = status_future.result()
+        profile_dict_str = profile_dict_future.result()
         socials_str = socials_future.result()
         pr_activity_str = pr_activity_future.result()
         issue_activity_str = issue_activity_future.result()
@@ -56,6 +58,8 @@ def get_data():
         print(f"Fetch data: {ts_after - ts_before:.2f} seconds")
 
     # Parse data. This should only happen after all data has been fetched.
+    _parse_status(status_str)
+    _parse_profile_dict(profile_dict_str)
     _parse_socials(socials_str)
     _parse_pr_activity(pr_activity_str)
     _parse_issue_activity(issue_activity_str)
@@ -63,13 +67,32 @@ def get_data():
 
 # --- Helper functions ---
 
-def _get_profile_dict():
-    """Get all the profile information we'll need."""
+def _fetch_status():
+    """Fetch output of `gh auth status`."""
+    cmd = "gh auth status"
+    return infra_utils.run_cmd(cmd)
+
+def _parse_status(status_str):
+    """Parse output of status call."""
+    if "Logged in to github.com account " not in status_str:
+        # Show the stdout part of `gh auth status`, if there is any.
+        # I believe this is relevant when the user has an expired token.
+        if status_str:
+            msg = f"{status_str}\n"
+        else:
+            msg = ""
+
+        msg += "The GitHub CLI tool (gh) is not authenticated."
+        msg += "\nRun `gh auth login` to authenticate."
+        sys.exit(msg)
+
+def _fetch_profile_dict():
+    """Fetch the profile information we'll need."""
     cmd = f"gh api users/{pdata.username} --jq '{{login, name, created_at, company, blog, location, email, bio}}'"
+    return infra_utils.run_cmd(cmd)
 
-    profile_dict_str = infra_utils.run_cmd(cmd)
-    _ensure_authenticated(profile_dict_str)
-
+def _parse_profile_dict(profile_dict_str):
+    """Parse the profile information that was fetched."""
     try:
         pdata.profile_dict = json.loads(profile_dict_str)
     except json.decoder.JSONDecodeError:
@@ -147,20 +170,6 @@ def _parse_issue_activity(issue_activity_str):
     except (json.decoder.JSONDecodeError, KeyError):
         msg = "Couldn't get recent issue activity. The gh CLI may have timed out."
         msg += "\n  You may want to try running the command again."
-        sys.exit(msg)
-
-
-def _ensure_authenticated(profile_dict_str):
-    """Check that the gh CLI tool has been authenticated.
-
-    This should be called when the first external gh call is made.
-    Making this check on the output of an actual call is more efficent than
-    calling `gh api user --jq .login` just to verify authentication.
-    """
-    if not profile_dict_str.strip():
-        msg = "The GitHub CLI tool (gh) is not authenticated, or the API hung."
-        msg += "\n  If you've already authenticated, try running the gh-profiler command again."
-        msg += "\n  If you're not authenticated, run `gh auth login`."
         sys.exit(msg)
 
 
