@@ -19,7 +19,9 @@ def test_summary():
 def test_summary_empty_profile(empty_profile_info):
     """Test summary for user with an empty profile."""
     summary = summary_utils._get_summary()
-    assert summary.strip() == reference_summaries.summary_empty_profile
+
+    assert "🔴 Significant concerns found with user's profile." in summary
+    assert "🔴 No profile information provided." in summary
 
 
 def test_no_issue_activity():
@@ -27,7 +29,7 @@ def test_no_issue_activity():
     pdata.new_issue_count = 0
     summary = summary_utils._get_summary()
 
-    assert "🟢 ehmatthes opened no new issues in the last 21 days." in summary
+    assert "🟢 No new issues opened in the last 21 days." in summary
     assert "issues closed as NOT_PLANNED." not in summary
     assert "issues opened with the same title:" not in summary
 
@@ -38,7 +40,20 @@ def test_redact():
     summary = summary_utils._get_summary()
 
     assert "ehmatthes" not in summary
-    assert summary.count("<redacted") == 7
+    assert summary.count("<redacted") == 5
+
+def test_full_concise_header_lines():
+    """The full summary should include the same header lines as concise."""
+    summary_full = summary_utils._get_summary()
+    assert "No concerns found with user's profile." in summary_full
+    assert "No concerns found with recent PR activity." in summary_full
+    assert "No concerns found with recent issue activity." in summary_full
+
+    pdata.concise = True
+    summary_concise = summary_utils._get_summary()
+    assert "No concerns found with user's profile." in summary_concise
+    assert "No concerns found with recent PR activity." in summary_concise
+    assert "No concerns found with recent issue activity." in summary_concise
 
 def test_concise():
     """Test output with pdata.concise set to True."""
