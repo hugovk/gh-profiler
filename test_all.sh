@@ -4,6 +4,11 @@
 # If they're taking much longer than a few seconds, it's probably worth
 # cancelling the run and run again.
 
+# Unit tests.
 uv run pytest
-uv run pytest tests/e2e_tests -k full
-uv run pytest tests/e2e_tests -k concise
+
+# E2e tests.
+uv run pytest tests/e2e_tests
+
+# Tests against actual users.
+uv run pytest developer_resources/test_actual_users.py -s

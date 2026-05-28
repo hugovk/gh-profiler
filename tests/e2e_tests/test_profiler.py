@@ -5,15 +5,45 @@ Makes an actual gh-profiler call. Currently calls against my own user account
 to use.
 """
 
+import sys
+import subprocess
+
 import pytest
 
 from gh_profiler.utils import infra_utils
 
 
+# --- Helper functions ---
+
+def run_with_timeout(cmd):
+    """Run gh-profiler command, with a timeout."""
+    num_attempts = 0
+    while num_attempts < 5:
+        try:
+            output = infra_utils.run_cmd(cmd, timeout=5)
+        except subprocess.TimeoutExpired:
+            print("Time out.")
+            num_attempts += 1
+        else:
+            # Did not time out, but check that we got a response.
+            if output:
+                return output
+            else:
+                print("Got an empty response.")
+                num_attempts += 1
+                continue
+    
+    # Skip this entire module if there are too many timeouts.
+    msg = "Too many timeouts."
+    pytest.skip(msg, allow_module_level=True)
+
+
+# --- Test functions ---
+
 def test_full_run():
     """Test a standard run of gh-profiler."""
     cmd = "uv run gh-profiler ehmatthes"
-    output = infra_utils.run_cmd(cmd)
+    output = run_with_timeout(cmd)
 
     if output == "":
         msg = "Output was empty, which may indicate a gh timeout rather than a problem with the code."
@@ -35,7 +65,7 @@ def test_full_run():
 def test_concise_run():
     """Test a --concise run of gh-profiler."""
     cmd = "uv run gh-profiler ehmatthes --concise"
-    output = infra_utils.run_cmd(cmd)
+    output = run_with_timeout(cmd)
 
     if output == "":
         msg = "Output was empty, which may indicate a gh timeout rather than a problem with the code."
