@@ -21,7 +21,8 @@ def ensure_gh():
     """
     cmd = "gh --version"
     try:
-        version_info = infra_utils.run_cmd(cmd)
+        result = infra_utils.run_cmd(cmd)
+        version_info = result.stdout
     except FileNotFoundError:
         msg = "The GitHub CLI tool (gh) must be installed."
         msg += "\n  https://cli.github.com"
@@ -47,7 +48,7 @@ def get_data():
         issue_activity_future = executor.submit(_fetch_issue_activity)
 
         # When each call finishes, store the result.
-        status_str = status_future.result()
+        status_obj = status_future.result()
         profile_dict_str = profile_dict_future.result()
         socials_str = socials_future.result()
         pr_activity_str = pr_activity_future.result()
@@ -58,7 +59,7 @@ def get_data():
         print(f"Fetch data: {ts_after - ts_before:.2f} seconds")
 
     # Parse data. This should only happen after all data has been fetched.
-    _parse_status(status_str)
+    _parse_status(status_obj)
     _parse_profile_dict(profile_dict_str)
     _parse_socials(socials_str)
     _parse_pr_activity(pr_activity_str)
@@ -68,28 +69,44 @@ def get_data():
 # --- Helper functions ---
 
 def _fetch_status():
-    """Fetch output of `gh auth status`."""
+    """Fetch output of `gh auth status`.
+    
+    Unlike most other calls, this returns the CommandResult instance, because
+    we'll need to inspect stdout and stderr.
+    """
     cmd = "gh auth status"
     return infra_utils.run_cmd(cmd)
 
-def _parse_status(status_str):
-    """Parse output of status call."""
-    if "Logged in to github.com account " not in status_str:
-        # Show the stdout part of `gh auth status`, if there is any.
+def _parse_status(status_obj):
+    """Parse output of status call.
+    
+    Unlike most other parsing functions, this acts no an instance of
+    CommandResult, because we need to look at stdout and stderr.
+    """
+    msg_authenticated = "Logged in to github.com account "
+    authenticated = (
+        msg_authenticated in status_obj.stdout
+        or msg_authenticated in status_obj.stderr
+    )
+    if not authenticated:
+        # Show the output of `gh auth status`, if there is any.
         # I believe this is relevant when the user has an expired token.
-        if status_str:
-            msg = f"{status_str}\n"
-        else:
-            msg = ""
+        msg = ""
+        if status_obj.stdout:
+            msg += f"\n{status_obj.stdout}\n"
+        if status_obj.stderr:
+            msg += f"\n{status_obj.stderr}\n"
 
-        msg += "The GitHub CLI tool (gh) is not authenticated."
+        msg += "\nThe GitHub CLI tool (gh) is not authenticated."
         msg += "\nRun `gh auth login` to authenticate."
         sys.exit(msg)
 
 def _fetch_profile_dict():
     """Fetch the profile information we'll need."""
     cmd = f"gh api users/{pdata.username} --jq '{{login, name, created_at, company, blog, location, email, bio}}'"
-    return infra_utils.run_cmd(cmd)
+    result = infra_utils.run_cmd(cmd)
+
+    return result.stdout
 
 def _parse_profile_dict(profile_dict_str):
     """Parse the profile information that was fetched."""
@@ -115,7 +132,9 @@ def _fetch_socials():
     they require an additional API call.
     """
     cmd = f"gh api users/{pdata.username}/social_accounts"
-    return infra_utils.run_cmd(cmd)
+    result = infra_utils.run_cmd(cmd)
+
+    return result.stdout
 
 def _parse_socials(socials_str):
     """Parse the data string returned from _fetch_socials()."""
@@ -136,7 +155,9 @@ def _fetch_pr_activity():
         f"author:{pdata.username} is:pull-request is:public created:>={cutoff}"
     )
     cmd = f"gh api graphql -f query='{pr_query}' -F q='{search_query}' -F n=100"
-    return infra_utils.run_cmd(cmd)
+    result = infra_utils.run_cmd(cmd)
+
+    return result.stdout
 
 def _parse_pr_activity(pr_activity_str):
     """Parse the data returned by _fetch_pr_activity()."""
@@ -181,7 +202,9 @@ def _fetch_issue_activity():
     """Fetch target user's recent public issue activity."""
     cutoff = (dt.now(tz.utc) - timedelta(days=21)).date().isoformat()
     gh_call = _get_gh_issues_call(pdata.username, cutoff)
-    return infra_utils.run_cmd(gh_call)
+    result = infra_utils.run_cmd(gh_call)
+
+    return result.stdout
 
 def _parse_issue_activity(issue_activity_str):
     """Parse data returned by _fetch_issue_activity()."""
