@@ -8,6 +8,16 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### 0.7.1
+
+#### External changes
+
+- Checks for slightly shorter auth message, because `gh auth status` emits a different message on Windows.
+
+#### Internal changes
+
+- NA
+
 ### 0.7.0
 
 #### External changes
