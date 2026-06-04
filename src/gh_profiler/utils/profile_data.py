@@ -32,6 +32,7 @@ class ProfileData:
     profile_info: dict | None = None
 
     account_age: int = 0
+    orgs: list | None = None
     socials: list | None = None
 
     flag_age: str = ""
@@ -42,12 +43,10 @@ class ProfileData:
     # external repos.
     opened_count: int = 0
     opened_count_owned: int = 0
+    opened_count_orgs: int = 0
     opened_count_external: int = 0
 
-    merged_count_owned: int = 0
     merged_count_external: int = 0
-
-    closed_count_owned: int = 0
     closed_count_external: int = 0
 
     # No flags needed for PRs against your own repos; that's informational only.
@@ -56,6 +55,11 @@ class ProfileData:
 
     # --- Issue fields ---
     new_issue_count: int = 0
+    issues_owned: int = 0
+    issues_orgs: int = 0
+    issues_external: int = 0
+
+    # These fields all relate to external issues.
     issues_not_planned: int = 0
     total_repeats: int = 0
     repeated_issue_titles: dict | None = None

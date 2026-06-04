@@ -81,6 +81,7 @@ def _get_full_summary():
     age = humanize.naturaldelta(pdata.account_age)
     summary += f"   {pdata.flag_age} Account age: {age}"
     summary += _profile_summary()
+    summary += _org_summary()
     summary += "\n"
 
     # Include PR activity.
@@ -92,11 +93,13 @@ def _get_full_summary():
     summary += _get_issue_header()
     summary += _issue_activity_summary()
 
+    # Make sure there are no doubled blank lines in summary.
+    summary = summary.replace("\n\n\n", "\n\n")
+
     return summary.strip()
 
 
 # --- Helper functions ---
-
 
 def _redact_info():
     """Redact identifying information when --redact passed.
@@ -167,7 +170,6 @@ def _profile_summary():
 
     return summary
 
-
 def _bio_summary(bio):
     """Summarize bio section of profile."""
     if bio.count("\n") == 0:
@@ -178,6 +180,15 @@ def _bio_summary(bio):
     for line in bio.splitlines():
         summary += f"          {line}\n"
     return summary
+
+
+def _org_summary():
+    """Summarize user's orgs."""
+    if not pdata.orgs:
+        return ""
+    
+    orgs_list = ", ".join(pdata.orgs)
+    return f"      Orgs: {orgs_list}\n"
 
 
 def _pr_activity_summary():
@@ -195,6 +206,7 @@ def _pr_activity_summary():
 
     # Report breakdown of owned and external PRs.
     summary += f"      {pdata.opened_count_owned} opened against repos the user owns.\n"
+    summary += f"      {pdata.opened_count_orgs} opened against repos in publicly associated orgs.\n"
     summary += f"      {pdata.opened_count_external} opened against external repos.\n\n"
 
     # If no external PRs, there's nothing more to add.
@@ -216,14 +228,18 @@ def _issue_activity_summary():
     if pdata.new_issue_count == 0:
         return f"   {flags.green_flag} No new issues opened in the last 21 days.\n"
 
-    summary = f"   {pdata.flag_overall_issues} {pdata.new_issue_count} new issues opened in the last 21 days.\n"
-    summary += f"   {pdata.flag_issues_not_planned} {pdata.issues_not_planned} issues closed as NOT_PLANNED.\n"
+    summary = f"   {pdata.new_issue_count} new issues opened in the last 21 days.\n"
+    summary += f"      {pdata.issues_owned} opened in repos the user owns.\n"
+    summary += f"      {pdata.issues_orgs} opened in repos in publicly associated orgs.\n"
+    summary += f"      {pdata.issues_external} opened in external repos.\n\n"
+    summary += f"   {pdata.flag_issues_not_planned} {pdata.issues_not_planned} external issues closed as NOT_PLANNED.\n"
 
     # Repeated issues:
     if pdata.total_repeats == 0:
-        summary += f"   {pdata.flag_repeated_issues} {pdata.total_repeats} issues opened with the same title.\n"
+        # This block has a period, the else block has a colon for the list of titles that follows.
+        summary += f"   {pdata.flag_repeated_issues} {pdata.total_repeats} external issues opened with the same title.\n"
     else:
-        summary += f"   {pdata.flag_repeated_issues} {pdata.total_repeats} issues opened with the same title:\n"
+        summary += f"   {pdata.flag_repeated_issues} {pdata.total_repeats} external issues opened with the same title:\n"
     for title, count in pdata.repeated_issue_titles.items():
         summary += f"        {title} ({count})\n"
 

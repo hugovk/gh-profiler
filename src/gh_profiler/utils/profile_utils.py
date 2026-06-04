@@ -8,6 +8,7 @@ from datetime import timedelta
 from datetime import timezone as tz
 from textwrap import dedent
 from time import perf_counter
+from collections import Counter
 
 from . import infra_utils
 from .profile_data import profile_data as pdata
@@ -43,6 +44,7 @@ def get_data():
         # Make fetching calls.
         status_future = executor.submit(_fetch_status)
         profile_dict_future = executor.submit(_fetch_profile_dict)
+        orgs_future = executor.submit(_fetch_orgs)
         socials_future = executor.submit(_fetch_socials)
         pr_activity_future = executor.submit(_fetch_pr_activity)
         issue_activity_future = executor.submit(_fetch_issue_activity)
@@ -50,6 +52,7 @@ def get_data():
         # When each call finishes, store the result.
         status_obj = status_future.result()
         profile_dict_str = profile_dict_future.result()
+        orgs_str = orgs_future.result()
         socials_str = socials_future.result()
         pr_activity_str = pr_activity_future.result()
         issue_activity_str = issue_activity_future.result()
@@ -61,6 +64,7 @@ def get_data():
     # Parse data. This should only happen after all data has been fetched.
     _parse_status(status_obj)
     _parse_profile_dict(profile_dict_str)
+    _parse_orgs(orgs_str)
     _parse_socials(socials_str)
     _parse_pr_activity(pr_activity_str)
     _parse_issue_activity(issue_activity_str)
@@ -125,6 +129,31 @@ def _parse_profile_dict(profile_dict_str):
     if pdata.profile_dict["created_at"] is None:
         sys.exit(f"GitHub user '{pdata.username}' not found.")
 
+def _fetch_orgs():
+    """Fetch the user's publicly visible orgs.
+    
+    This will be used to distinguish between PRs and issues opened against
+    external repos, and repos the user is associated with.
+    """
+    cmd = (
+        f"gh api users/{pdata.username}/orgs "
+        "--jq '[.[] | {login, description, url}]'"
+    )
+    result = infra_utils.run_cmd(cmd)
+
+    return result.stdout
+
+def _parse_orgs(orgs_str):
+    """Parse the org info that was found."""
+    try:
+        orgs = json.loads(orgs_str)
+    except json.decoder.JSONDecodeError:
+        msg = "Couldn't get org info. The gh CLI may have timed out."
+        msg += "\n  You may want to try running the command again."
+        sys.exit(msg)
+
+    pdata.orgs = [org["login"] for org in orgs]
+
 def _fetch_socials():
     """Fetch social media accounts from user's profile.
     
@@ -181,16 +210,20 @@ def _parse_pr_activity(pr_activity_str):
     ]
 
     pdata.opened_count_owned = len(prs_owned)
-    pdata.merged_count_owned = sum(pr["mergedAt"] is not None for pr in prs_owned)
-    pdata.closed_count_owned = sum(
-        pr["state"] == "CLOSED" and pr["mergedAt"] is None for pr in prs_owned
-    )
+
+    # PRS against repos in orgs the user is publicly associated with.
+    prs_orgs = [
+        pr for pr in prs
+        if pr["repository"]["owner"]["login"] in pdata.orgs
+    ]
+
+    pdata.opened_count_orgs = len(prs_orgs)
 
     # PRs against external repos.
     prs_external = [
         pr for pr in prs
-        if pr["repository"]["owner"]["login"].casefold()
-        != pdata.username.casefold()
+        if pr not in prs_owned
+        and pr not in prs_orgs
     ]
     pdata.opened_count_external = len(prs_external)
     pdata.merged_count_external = sum(pr["mergedAt"] is not None for pr in prs_external)
@@ -209,11 +242,50 @@ def _fetch_issue_activity():
 def _parse_issue_activity(issue_activity_str):
     """Parse data returned by _fetch_issue_activity()."""
     try:
-        pdata.issue_activity = json.loads(issue_activity_str)["data"]["search"]
+        issue_activity = json.loads(issue_activity_str)["data"]["search"]
     except (json.decoder.JSONDecodeError, KeyError):
         msg = "Couldn't get recent issue activity. The gh CLI may have timed out."
         msg += "\n  You may want to try running the command again."
         sys.exit(msg)
+
+    issue_dicts = issue_activity["nodes"]
+    issues_owned = [
+        id for id in issue_dicts
+        if id["repository"]["owner"]["login"] == pdata.username
+    ]
+    issues_orgs = [
+         id for id in issue_dicts
+         if id["repository"]["owner"]["login"] in pdata.orgs
+    ]
+    issues_external = [
+         id for id in issue_dicts
+         if id not in issues_owned
+         and id not in issues_orgs
+    ]
+
+    # DEV: Should we be dealing with pagination?
+    # When does issueCount != len(issue_dicts)?
+    pdata.new_issue_count = issue_activity["issueCount"]
+
+    pdata.issues_owned = len(issues_owned)
+    pdata.issues_orgs = len(issues_orgs)
+    pdata.issues_external = len(issues_external)
+    pdata.issues_not_planned = len(
+        [d for d in issues_external if d["stateReason"] == "NOT_PLANNED"]
+    )
+
+    _process_repeated_issues(issues_external)
+
+def _process_repeated_issues(issues_external):
+    """Look for issues with the same title across multiple repositories."""
+    issue_titles = [d["title"].strip() for d in issues_external]
+
+    counter = Counter(issue_titles)
+    # Only keep titles for repeated issues.
+    pdata.repeated_issue_titles = {
+        title: count for title, count in counter.items() if count > 1
+    }
+    pdata.total_repeats = sum(pdata.repeated_issue_titles.values())
 
 
 def _get_gh_issues_call(username, cutoff):
@@ -237,6 +309,11 @@ def _get_gh_issues_call(username, cutoff):
                 url
                 repository {{
                 nameWithOwner
+                isInOrganization
+                owner {{
+                    __typename
+                    login
+                }}
                 }}
             }}
             }}
@@ -267,7 +344,9 @@ def _get_pr_query():
                         url
                         repository {{
                             nameWithOwner
+                            isInOrganization
                             owner {{
+                                __typename
                                 login
                             }}
                         }}

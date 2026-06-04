@@ -26,15 +26,20 @@ GitHub user: <redacted>
 🟢 No concerns found with recent PR activity.
    2 PRs opened in the last 21 days.
       0 opened against repos the user owns.
+      0 opened against repos in publicly associated orgs.
       2 opened against external repos.
 
    🟢 1 of 2 external PRs merged in the last 21 days.
    🟢 1 of 2 external PRs closed without merging in the last 21 days.
 
 🔴 Significant concerns found with recent issue activity.
-   🔴 79 new issues opened in the last 21 days.
-   🟢 1 issues closed as NOT_PLANNED.
-   🔴 70 issues opened with the same title:
+   79 new issues opened in the last 21 days.
+      0 opened in repos the user owns.
+      0 opened in repos in publicly associated orgs.
+      79 opened in external repos.
+
+   🟢 1 external issue closed as NOT_PLANNED.
+   🔴 78 external issues opened with the same title:
         📋 Documentation Enhancement Suggestion (70)
 ```
 
@@ -228,6 +233,12 @@ To track overall real-world performance over time, use the benchmarking script:
 $ uv run developer_resources/benchmark.py
 $ uv run developer_resources/benchmark.py <target>
 ```
+
+Benchmarking is pretty straightforward when:
+
+- Using `git switch` to switch between main and dev branches;
+- Using Git to check out different tags and commits.
+- Using `uv run --python 3.14`, `uv run --python 3.14t`, etc.
 
 New releases
 ---
