@@ -13,6 +13,20 @@ Running as a tool
 If you have uv installed, you can run this as a tool against any GitHub user:
 
 ```txt
+$ uvx gh-profiler <redacted> --concise
+GitHub user: <redacted>
+🟡 Some concerns found with user's profile.
+🟢 No concerns found with recent PR activity.
+🔴 Significant concerns found with recent issue activity.
+
+For a more detailed report, run `gh-profiler <redacted>`.
+```
+
+This is the concise output, which gives you a quick sense of whether the user has any recent activity that indicates problematic open source behavior.
+
+The full output gives you much more specific information:
+
+```txt
 $ uvx gh-profiler <redacted>
 GitHub user: <redacted>
 🟡 Some concerns found with user's profile.

@@ -14,6 +14,7 @@ These initial releases have usable behavior, but may have some rough edges for s
 
 - Identifies PRs and issues in three categories: against repos the user owns, against orgs the user is publicly associated with, and against external orgs. All analysis for evaluating flags is based on the user's activity in external repos.
 - Reports orgs the user is publicly associated with.
+- README emphasizes concise usage first, before showing full output.
 
 #### Internal changes
 
