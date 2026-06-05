@@ -8,6 +8,16 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### Unreleased
+
+#### External changes
+
+- Redacts user's org info.
+
+#### Internal changes
+
+- 
+
 ### 0.7.1
 
 #### External changes
