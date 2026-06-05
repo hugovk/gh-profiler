@@ -58,12 +58,19 @@ def test_full_run(target):
         pytest.fail(msg)
 
     # Make assertions about stable parts of output, not entire output string.
-    # DEV: Find some assertions to make about PRs and issues?
+    # Start with user information:
     if target == "ehmatthes":
         expected_strings = ["GitHub user: ehmatthes"]
     else:
         expected_strings = ["Author: ehmatthes"]
 
+    # Issue and PR title:
+    if target == 1:
+        expected_strings += ["Issue #1: Quick post-POC cleanup"]
+    elif target == 3:
+        expected_strings += ["PR #3: Use a single shared data structure to store all information about user."]
+
+    # DEV: Find some assertions to make about PRs and issues?
     expected_strings += [
         "🟢 Profile information:",
         "name: Eric Matthes",
