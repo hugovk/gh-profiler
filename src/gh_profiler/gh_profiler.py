@@ -11,6 +11,7 @@ from .utils import profile_utils
 from .utils import analysis_utils
 from .utils import workflow_utils
 from .utils import summary_utils
+from .utils import repo_fetching, repo_analysis, repo_summary
 
 
 def main():
@@ -28,3 +29,36 @@ def main():
 
     # Summarize findings.
     summary_utils.show_summary()
+
+    # Don't return to cli.
+    sys.exit()
+
+def profile_url():
+    """Profile contributors of PRs or issues on a specific repo.
+    
+    Usage:
+    # Profile contributors of the most recent 10 open PRs (concise):
+    $ gh-profiler <repo>
+
+    # Most recent 20 PRs:
+    $ gh-profiler <repo> -n 20
+
+    # Most recent merged/closed PRs (shows profile, and end state):
+    $ gh-profiler <repo> --back
+
+    # Most recently opened issues:
+    $ gh-profiler <repo> --issues
+    """
+    # Make sure gh is available.
+    profile_utils.ensure_gh()
+
+    # Get and analyze all the data we'll need.
+    target_prs = repo_fetching.get_data()
+    repo_analysis.process_data(target_prs)
+
+    # DEV: This will be used when bulk processing of PRs is done in parallel.
+    # That requires pdata to not be a singleton.
+    # repo_summary.show_summary(target_prs)
+
+    # Don't return to cli.
+    sys.exit()
