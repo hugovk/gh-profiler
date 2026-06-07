@@ -15,5 +15,8 @@ class CLIConfig:
     issues: bool | None = None
     back: bool | None = None
 
+    redact: bool | None = None
+    table_only: bool | None = None
+
 
 cli_config = CLIConfig()

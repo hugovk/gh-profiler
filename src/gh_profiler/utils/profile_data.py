@@ -1,6 +1,6 @@
 """One place to store all data about the user."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, MISSING
 
 
 @dataclass(slots=True)
@@ -83,6 +83,32 @@ class ProfileData:
     benchmark_fetch: bool = False
 
     generate_workflow: bool = False
+
+    def reset_fields(self):
+        """Reset fields.
+        
+        DEV: This should be unnecessary when pdata is no longer used as a 
+        singleton object.
+        """
+        behavior_fields = {
+            "concise",
+            "verbose",
+            "redact",
+            "benchmark_fetch",
+            "generate_workflow",
+        }
+
+        for field in fields(self):
+            if field.name in behavior_fields:
+                continue
+
+            if field.default_factory is not MISSING:
+                value = field.default_factory()
+            else:
+                value = field.default
+
+            setattr(self, field.name, value)
+
 
 
 

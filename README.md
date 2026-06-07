@@ -146,6 +146,17 @@ https://github.com/django/django/pull/21426
   GitHub user: <redacted>
   🟢 No concerns found with user's profile.
   ...
+
+            Comparison of gh-profiler results with final merged state:             
+┏━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ PR num ┃ gh-profiler ┃ Author     ┃ PR link                                     ┃
+┡━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 21427  │ 🟢🟢🟢      │ <redacted> │ https://github.com/django/django/pull/21427 │
+│ 21425  │ 🔴🟡🟢      │ <redacted> │ https://github.com/django/django/pull/21425 │
+...
+│ 21416  │ 🟢🟢🟢      │ <redacted> │ https://github.com/django/django/pull/21416 │
+│ 21415  │ 🟡🟢🟢      │ <redacted> │ https://github.com/django/django/pull/21415 │
+└────────┴─────────────┴────────────┴─────────────────────────────────────────────┘
 ```
 
 By default, this will process the 10 most recently opened PRs. If you want to process a different number, use the `-n` arg:
@@ -153,6 +164,27 @@ By default, this will process the 10 most recently opened PRs. If you want to pr
 ```txt
 $ uvx gh-profiler <repo-url> -n 3
 ```
+
+You can also look back at the most recently closed PRs, and request just the final summary table:
+
+```txt
+$ uv run gh-profiler https://github.com/django/django --back --table-only --redact
+Fetching user profiles ..........
+
+                 Comparison of gh-profiler results with final merged state:                  
+┏━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ PR num ┃ Merged? ┃ gh-profiler ┃ Author     ┃ PR link                                     ┃
+┡━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 21428  │   🔴    │ 🟢🟢🟢      │ <redacted> │ https://github.com/django/django/pull/21428 │
+│ 21423  │   🔴    │ 🔴🟡🟢      │ <redacted> │ https://github.com/django/django/pull/21423 │
+│ 21197  │   🟣    │ 🟢🟢🟢      │ <redacted> │ https://github.com/django/django/pull/21197 │
+...
+│ 21401  │   🟣    │ 🟢🟢🟢      │ <redacted> │ https://github.com/django/django/pull/21401 │
+└────────┴─────────┴─────────────┴────────────┴─────────────────────────────────────────────┘
+```
+
+> [!NOTE]
+> When using `--back` to look at merged and closed PRs, the output may differ from what you see on GitHub's PR tab in the corresponding repo. The gh API returns a different filtered set than what we see when we click "closed" on the PR tab in a browser. The data you see for each PR should be accurate; if it's not, please open an issue.
 
 False positives
 ---

@@ -5,6 +5,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from textwrap import dedent
 from time import perf_counter
+from datetime import datetime as dt, timezone
 
 from . import infra_utils
 from .profile_data import profile_data as pdata
@@ -89,29 +90,85 @@ def _parse_prs(prs_obj):
     for pr_dict in prs_json["data"]["repository"]["pullRequests"]["nodes"]:
         pr_data = PRData(
             pr_num=pr_dict["number"],
-            author=pr_dict["author"]["login"],
+            author=_get_author(pr_dict),
             title=pr_dict["title"],
             url=pr_dict["url"],
         )
+        if cli_config.back:
+            _add_pr_back_fields(pr_dict, pr_data)
         target_prs.append(pr_data)
+
+    # When looking back, we grabbed more PRs than we need. Sort them by 
+    # closedAt, and return the number that were actually requested.
+    if cli_config.back:
+        target_prs.sort(key=lambda pr: pr.closed_at, reverse=True)
+        target_prs = target_prs[:cli_config.num_targets]
+
 
     return target_prs
 
+def _get_author(pr_dict):
+    """Get the author of the PR.
+    
+    When a user deletes their account, GitHub shows the author as `ghost`.
+    """
+    if pr_dict["author"] is None:
+        return "ghost"
+    else:
+        return pr_dict["author"]["login"]
+    
+
+def _add_pr_back_fields(pr_dict, pr_data):
+    """Add fields to PRData object that only related to looking back."""
+    pr_data.closed_at = _parse_gh_timestamp(pr_dict["closedAt"])
+
+    if pr_dict["merged"]:
+        pr_data.merged = True
+    else:
+        pr_data.merged = False
+
+
+def _parse_gh_timestamp(ts):
+    """Parse a gh API timestamp."""
+    return dt.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(
+        tzinfo=timezone.utc
+    )
 
 def _get_pr_query():
-    """Return the gh call for recent open PRs in a repo."""
+    """Return the gh call for recent PRs in a repo."""
+    if cli_config.back:
+        gh_state = "[CLOSED, MERGED]"
+        order_field = "UPDATED_AT"
+    else:
+        gh_state = "OPEN"
+        order_field = "CREATED_AT"
+
+    if cli_config.back:
+        # Get 5x as many PRs as requested. This query is sorted by updatedAt,
+        # We want to show by closedAt.
+        num_prs = 5 * cli_config.num_targets
+    else:
+        # When looking at open PRs, no need to modify count.
+        num_prs = cli_config.num_targets
+
+
     gh_call = f"""
         gh api graphql -f query='
         query($owner: String!, $repo: String!, $n: Int!) {{
         repository(owner: $owner, name: $repo) {{
             pullRequests(
             first: $n,
-            states: OPEN,
-            orderBy: {{field: CREATED_AT, direction: DESC}}
+            states: {gh_state},
+            orderBy: {{field: {order_field}, direction: DESC}}
             ) {{
             nodes {{
                 number
                 title
+                state
+                merged
+                createdAt
+                closedAt
+                mergedAt
                 url
                 author {{
                 login
@@ -119,7 +176,7 @@ def _get_pr_query():
             }}
             }}
         }}
-        }}' -F owner='{repo_data.owner}' -F repo='{repo_data.repo_name}' -F n={cli_config.num_targets}
+        }}' -F owner='{repo_data.owner}' -F repo='{repo_data.repo_name}' -F n={num_prs}
     """
 
     return dedent(gh_call).strip()
