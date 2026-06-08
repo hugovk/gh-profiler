@@ -8,6 +8,16 @@ For inspiration and motivation, see [Keep a CHANGELOG](https://keepachangelog.co
 
 These initial releases have usable behavior, but may have some rough edges for some users and use cases.
 
+### 0.8.2
+
+#### External changes
+
+- Uses green flag for merged PRs. This is much easier to compare against gh-profiler results, and much more important than trying to match GH's merged icon color.
+
+#### Internal changes
+
+- NA
+
 ### 0.8.1
 
 #### External changes
