@@ -217,7 +217,7 @@ Workflow type:
 > [!NOTE]
 > You don't need Python if you want to run gh-profiler each time a PR or issue is opened in a repository. You can copy the [profiler_contributors.yml](https://github.com/ehmatthes/gh-profiler/blob/main/src/gh_profiler/templates/profile_contributors.yml) file or the [profiler_contributors_link_only.yml](https://github.com/ehmatthes/gh-profiler/blob/main/src/gh_profiler/templates/profile_contributors_link_only.yml) file and paste it into your own `.github/workflows/` directory.
 > 
-> From that point forward, you'll see a comment on each new PR and issue with a concise summary of the user that opened the PR or issue or a link to the Actions log containing the profile output. [Example](https://github.com/ehmatthes/gh-profiler/issues/67#issuecomment-4492670239)
+> From that point forward, you'll see a comment on each new PR and issue with a concise summary of the user that opened the PR or issue or a link to the Actions log containing the profile output. [Example](https://github.com/ehmatthes/gh-profiler/issues/131#issuecomment-4665371446)
 
 Talks & discussion
 ---
