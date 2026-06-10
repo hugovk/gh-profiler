@@ -36,6 +36,13 @@ jobs:
         run: |
           uvx gh-profiler@latest ${{ steps.meta.outputs.login }} --concise > profiler.txt
           echo
+          echo "======================= Concise profile ======================="
+          echo
+          cat profiler.txt
+          echo
+          echo "==============================================================="
+          echo
+          echo 
           echo "======================== Full profile ========================="
           echo
           uvx gh-profiler@latest ${{ steps.meta.outputs.login }}
@@ -47,13 +54,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           {
-            echo "Profile summary:"
-            echo
-            echo '```text'
-            cat profiler.txt
-            echo '```'
-            echo
-            echo '<a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ job.check_run_id }}">Full profile</a>'
+            echo '<a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ job.check_run_id }}">Contributor profile</a>'
           } > body.txt
 
           jq -Rs '{body: .}' body.txt > payload.json
